@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ana — Will you be my Valentine?</title>
+  <meta name="description" content="Ana, will you be my valentine? — playful page with two bubbles (No is impossible to choose)." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg1:#fff5f8;
+      --accent:#ff2b63;
+      --muted:#8b8b8b;
+      --card:#ffffffcc;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial}
+    body{
+      display:flex;align-items:center;justify-content:center;
+      background:linear-gradient(180deg,#fffafc,var(--bg1));
+      padding:28px;
+    }
+
+    .card{
+      width:100%;max-width:760px;text-align:center;background:var(--card);border-radius:14px;
+      padding:36px 26px;box-shadow:0 20px 50px rgba(0,0,0,0.08);
+    }
+
+    .mascot{
+      width:86px;height:86px;border-radius:20px;background:linear-gradient(180deg,#fff,#ffeef6);
+      display:inline-flex;align-items:center;justify-content:center;font-size:42px;color:#d94a71;
+      margin:0 auto 14px;box-shadow:0 8px 20px rgba(217,74,113,0.12);
+      position:relative;
+    }
+    .mascot::after{
+      content:"";
+      width:22px;height:22px;border-radius:8px;background:#ff5a86;position:absolute;right:-6px;top:-8px;
+      transform:rotate(18deg);box-shadow:0 6px 12px rgba(255,90,134,0.18);
+    }
+
+    h1{font-family:'Playfair Display',serif;margin:6px 0 10px;font-size:22px;color:#222}
+    .question{font-size:18px;color:#333;margin:0 0 18px}
+    .sub{font-size:13px;color:var(--muted);margin-top:10px}
+
+    /* bubble area */
+    .bubbles{
+      height:200px;display:flex;align-items:center;justify-content:center;position:relative;
+      margin:6px 0 6px;
+    }
+
+    .bubble{
+      width:120px;height:48px;border-radius:28px;display:inline-flex;align-items:center;justify-content:center;
+      font-weight:600;cursor:pointer;user-select:none;border:0;
+      box-shadow:0 10px 30px rgba(0,0,0,0.08);
+      transition:transform .12s ease, box-shadow .12s ease,left .18s ease, top .18s ease;
+      position:absolute;
+      padding:10px 18px;
+      font-size:16px;
+    }
+
+    .bubble.yes{
+      left:calc(35% - 60px);
+      background:linear-gradient(180deg,#ff6b91,#ff2b63);
+      color:white;
+    }
+
+    .bubble.no{
+      left:calc(65% - 60px);
+      background:linear-gradient(180deg,#fff9fb,#ffeef6);
+      color:#b33b5a;
+      border:1px solid rgba(179,59,90,0.06);
+    }
+
+    .bubble:active{transform:scale(.97)}
+    .bubble:focus{outline:none;box-shadow:0 10px 30px rgba(0,0,0,0.12)}
+
+    /* playful floating */
+    @keyframes floaty {0%{transform:translateY(0)}50%{transform:translateY(-6px)}100%{transform:translateY(0)}}
+    .bubble.yes{animation:floaty 3.2s ease-in-out infinite}
+    .bubble.no{animation:floaty 3.9s ease-in-out infinite}
+
+    /* footer area */
+    .note{font-size:13px;color:var(--muted);margin-top:14px}
+
+    /* responsive tweaks */
+    @media (max-width:520px){
+      .bubble{width:110px;height:44px;font-size:15px}
+      .bubbles{height:170px}
+      .mascot{width:72px;height:72px;font-size:36px}
+    }
+  </style>
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <div class="mascot" aria-hidden="true">🐱</div>
+
+    <h1 id="title">Ana — will you be my Valentine?</h1>
+    <p class="question">Pick one:</p>
+
+    <div class="bubbles" id="wrap" aria-label="Yes or No bubbles" role="group">
+      <button id="yes" class="bubble yes" type="button" aria-label="Yes, I will">Yes</button>
+      <button id="no" class="bubble no" type="button" aria-label="No — not available" tabindex="-1" aria-disabled="true">No</button>
+    </div>
+
+    <div class="note">O "Não" está a fazer-se de difícil 💜</div>
+  </main>
+
+  <!-- small success modal -->
+  <div id="modal" role="dialog" aria-modal="true" style="display:none;position:fixed;inset:0;align-items:center;justify-content:center;">
+    <div style="position:absolute;inset:0;background:rgba(0,0,0,0.36)"></div>
+    <div style="position:relative;background:#fff;padding:20px;border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,0.12);min-width:260px;max-width:420px;text-align:center;">
+      <div style="font-size:34px;margin-bottom:8px">💖</div>
+      <div id="modal-text" style="font-weight:600;margin-bottom:14px">A Ana disse SIM! 💖</div>
+      <div id="modal-sub" style="font-size:13px;color:#666;margin-bottom:12px">Podes fechar esta página ou partilhar a boa notícia.</div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button id="closeModal" style="padding:8px 12px;border-radius:8px;border:0;background:#eee;cursor:pointer">Close</button>
+        <button id="share" style="padding:8px 12px;border-radius:8px;border:0;background:var(--accent);color:#fff;cursor:pointer">Share</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Organizer email placeholder (optional)
+    const organizerEmail = 'host@example.com';
+
+    const wrap = document.getElementById('wrap');
+    const yes = document.getElementById('yes');
+    const no = document.getElementById('no');
+    const modal = document.getElementById('modal');
+    const closeModal = document.getElementById('closeModal');
+    const shareBtn = document.getElementById('share');
+
+    // Position helpers
+    function rect(el){ return el.getBoundingClientRect(); }
+    function wrapRect(){ return wrap.getBoundingClientRect(); }
+    function clamp(v,a,b){ return Math.max(a, Math.min(b, v)); }
+
+    // Set initial positions (keeps layout similar to inspiration)
+    function resetPositions(){
+      const w = wrapRect();
+      // yes roughly left third
+      yes.style.position = 'absolute';
+      yes.style.left = Math.round(w.width * 0.22) + 'px';
+      yes.style.top  = Math.round((w.height - yes.getBoundingClientRect().height)/2) + 'px';
+      // no roughly right third
+      no.style.position = 'absolute';
+      no.style.left = Math.round(w.width * 0.66) + 'px';
+      no.style.top  = Math.round((w.height - no.getBoundingClientRect().height)/2) + 'px';
+    }
+
+    // Dodge logic for "No" bubble
+    const DODGE = 110;
+    function pointerMoved(e){
+      const pX = (e.touches && e.touches[0]) ? e.touches[0].clientX : e.clientX;
+      const pY = (e.touches && e.touches[0]) ? e.touches[0].clientY : e.clientY;
+      const noR = rect(no);
+      const centerX = noR.left + noR.width/2;
+      const centerY = noR.top + noR.height/2;
+      const dist = Math.hypot(centerX - pX, centerY - pY);
+      if(dist < DODGE){
+        // move "no" to a new random safe position inside wrap
+        placeNoAwayFrom({ x: pX - wrapRect().left, y: pY - wrapRect().top, min: DODGE });
+      }
+    }
+
+    function placeNoAwayFrom(avoid){
+      const w = wrapRect();
+      const noR = rect(no);
+      const margin = 8;
+      const maxX = Math.max(0, w.width - noR.width - margin*2);
+      const maxY = Math.max(0, w.height - noR.height - margin*2);
+
+      // try a few times to find a position far from avoid and from yes
+      const yesR = rect(yes);
+      const yesCenter = { x: yesR.left - w.left + yesR.width/2, y: yesR.top - w.top + yesR.height/2 };
+
+      for(let attempt=0; attempt<25; attempt++){
+        const x = Math.floor(Math.random()*maxX) + margin;
+        const y = Math.floor(Math.random()*maxY) + margin;
+        const cx = x + noR.width/2;
+        const cy = y + noR.height/2;
+        const dAvoid = Math.hypot(cx - (avoid.x || 0), cy - (avoid.y || 0));
+        const dYes   = Math.hypot(cx - yesCenter.x, cy - yesCenter.y);
+        if(dAvoid > (avoid.min || 140) && dYes > 120){
+          no.style.left = x + 'px';
+          no.style.top  = y + 'px';
+          return;
+        }
+      }
+      // fallback: put near top-left inside wrap
+      no.style.left = Math.max(8, Math.round(maxX * 0.1)) + 'px';
+      no.style.top  = Math.max(8, Math.round(maxY * 0.1)) + 'px';
+    }
+
+    // If "No" is clicked anyway, convert to Yes (impossible to choose No)
+    function handleNoClick(e){
+      e.preventDefault();
+      e.stopPropagation();
+      // playful confirmation then show yes result (translated to Portuguese)
+      if(confirm("Boa tentativa! Vamos registar isso como SIM. Continuar?")){
+        showYesResult();
+      } else {
+        // nudge it away
+        placeNoAwayFrom({ x: (e.clientX || (e.touches && e.touches[0].clientX)) - wrapRect().left,
+                          y: (e.clientY || (e.touches && e.touches[0].clientY)) - wrapRect().top,
+                          min: 140 });
+      }
+    }
+
+    // Yes flow: celebration modal with share option
+    function showYesResult(){
+      document.getElementById('modal-text').textContent = "A Ana disse SIM! 💖";
+      modal.style.display = 'flex';
+      modal.setAttribute('aria-hidden','false');
+    }
+    function hideModal(){
+      modal.style.display = 'none';
+      modal.setAttribute('aria-hidden','true');
+    }
+
+    yes.addEventListener('click', showYesResult);
+    yes.addEventListener('keydown', (e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); showYesResult(); } });
+
+    // Make "no" non-focusable and not reachable by keyboard
+    no.setAttribute('tabindex','-1');
+    no.setAttribute('aria-disabled','true');
+
+    // pointer interactions for dodge
+    wrap.addEventListener('mousemove', pointerMoved);
+    wrap.addEventListener('touchstart', pointerMoved, {passive:true});
+    wrap.addEventListener('touchmove', pointerMoved, {passive:true});
+
+    // intercept clicks/taps on "no"
+    no.addEventListener('click', handleNoClick);
+    no.addEventListener('touchend', function(e){ handleNoClick(e); }, {passive:false});
+    no.addEventListener('keydown', function(e){ e.preventDefault(); placeNoAwayFrom({ x: wrapRect().width/2, y: wrapRect().height/2, min: DODGE }); });
+
+    // modal controls
+    closeModal.addEventListener('click', hideModal);
+    shareBtn.addEventListener('click', async () => {
+      const data = { title: 'She said YES!', text: 'Ana said yes to the Valentine invite 💖', url: location.href };
+      if(navigator.share){
+        try{ await navigator.share(data); }catch(e){}
+      } else {
+        try{ await navigator.clipboard.writeText(window.location.href); alert('Link copied to clipboard.'); }catch(e){ alert('Unable to share.'); }
+      }
+    });
+
+    // reposition on resize
+    window.addEventListener('resize', resetPositions);
+
+    // initial placement
+    window.addEventListener('load', () => {
+      resetPositions();
+      // move "no" a little away from yes to start
+      placeNoAwayFrom({ x: wrapRect().width * 0.2, y: wrapRect().height/2, min: 160 });
+    });
+  </script>
+</body>
+</html>
